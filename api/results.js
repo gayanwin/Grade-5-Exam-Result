@@ -16,7 +16,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { index, year = '2025' } = req.body;
+    const { index, year = '2026' } = req.body;
 
     if (!index) {
       return res.status(400).json({ error: 'Index number is required' });
@@ -26,7 +26,9 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        'Referer': 'https://result.exams.gov.lk/',
+        'Origin': 'https://result.exams.gov.lk',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
       },
       body: JSON.stringify({
         exam: '5',
@@ -45,3 +47,4 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: err.message || 'Server error' });
   }
 }
+
