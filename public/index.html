@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="si" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5 වසර ශිෂ්‍යත්ව ප්‍රතිඵල පද්ධතිය | Grade 5 Result Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Sinhala:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', 'Noto Sans Sinhala', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-blue-500 selection:text-white">
+
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-blue-600/20 blur-[120px] pointer-events-none -z-10"></div>
+
+    <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                    <i class="fa-solid fa-graduation-cap text-xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-base md:text-lg tracking-tight text-white leading-tight">ශිෂ්‍යත්ව ප්‍රතිඵල පද්ධතිය</h1>
+                    <p class="text-xs text-slate-400">Grade 5 Scholarship Result Portal</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-2 bg-slate-900 border border-slate-800 rounded-xl p-1.5 px-3">
+                <i class="fa-regular fa-calendar-days text-blue-400 text-xs"></i>
+                <label class="text-xs text-slate-400 font-medium hidden sm:inline">වසර:</label>
+                <select id="globalYear" class="bg-transparent text-xs font-bold text-blue-400 outline-none cursor-pointer">
+                    <option value="2026">2026</option>
+                    <option value="2025" selected>2025</option>
+                    <option value="2024">2024</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto w-full px-4 py-8 flex-grow">
+        <div class="bg-slate-950/60 p-1.5 rounded-2xl border border-slate-800/80 mb-8 flex text-sm font-semibold">
+            <button id="tabSingleBtn" onclick="switchTab('single')" class="flex-1 py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 bg-blue-600 text-white shadow-lg shadow-blue-600/30">
+                <i class="fa-solid fa-user text-xs"></i>
+                <span>තනි ප්‍රතිඵලයක් (Single)</span>
+            </button>
+            <button id="tabBulkBtn" onclick="switchTab('bulk')" class="flex-1 py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-layer-group text-xs"></i>
+                <span>එකපාර ගොඩක් (Bulk & Excel)</span>
+            </button>
+        </div>
+
+        <section id="singleSection" class="bg-slate-950/40 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-2xl">
+            <div class="max-w-md mx-auto">
+                <div class="text-center mb-6">
+                    <h2 class="text-xl font-bold text-white mb-1">තනි අංකයක් පරීක්ෂා කරන්න</h2>
+                    <p class="text-xs text-slate-400">විභාග අංකය (Index Number) ඇතුළත් කර Result එක ලබාගන්න.</p>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-2">Index Number</label>
+                        <input type="number" id="singleIndexInput" placeholder="උදා: 8870713" 
+                            class="w-full bg-slate-900/90 border border-slate-700/80 rounded-2xl px-4 py-3.5 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 font-mono">
+                    </div>
+                    
+                    <button onclick="checkSingleResult()" id="singleSubmitBtn" 
+                        class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <span>ප්‍රතිඵල බලන්න</span>
+                    </button>
+                </div>
+
+                <div id="singleResultContainer" class="mt-6 hidden"></div>
+            </div>
+        </section>
+
+        <section id="bulkSection" class="bg-slate-950/40 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-2xl hidden">
+            <div class="mb-6">
+                <h2 class="text-xl font-bold text-white mb-1">Bulk Index Checker & Excel Export</h2>
+                <p class="text-xs text-slate-400">Index Numbers එකපාර කොමා (,) මඟින් හෝ Newlines මඟින් වෙන්කර Paste කරන්න.</p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-2">Index Numbers ලැයිස්තුව:</label>
+                    <textarea id="bulkIndexInput" rows="5" placeholder="8870713&#10;8870714&#10;8870715" 
+                        class="w-full bg-slate-900/90 border border-slate-700/80 rounded-2xl p-4 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500 font-mono text-sm"></textarea>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button onclick="startBulkCheck()" id="bulkSubmitBtn" 
+                        class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>සියල්ල පරීක්ෂා කරන්න</span>
+                    </button>
+                    
+                    <button id="downloadExcelBtn" onclick="downloadCSV()" 
+                        class="hidden bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-file-excel"></i>
+                        <span>Excel (CSV) Download</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="bulkProgressBox" class="mt-6 p-4 bg-slate-900/80 rounded-2xl border border-slate-800 hidden">
+                <div class="flex justify-between text-xs font-semibold text-slate-300 mb-2">
+                    <span id="bulkProgressText">පරීක්ෂා කරමින් පවතී...</span>
+                    <span><span id="completedCount" class="text-blue-400">0</span> / <span id="totalCount">0</span></span>
+                </div>
+                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div id="progressBar" class="bg-blue-500 h-full w-0 transition-all duration-300"></div>
+                </div>
+            </div>
+
+            <div id="bulkResultsTableContainer" class="mt-6 overflow-x-auto rounded-2xl border border-slate-800 hidden">
+                <table class="w-full text-left text-xs md:text-sm">
+                    <thead class="bg-slate-900 text-slate-400 font-bold border-b border-slate-800">
+                        <tr>
+                            <th class="p-3.5">Index</th>
+                            <th class="p-3.5">නම</th>
+                            <th class="p-3.5">ලකුණු</th>
+                            <th class="p-3.5">Cut-off</th>
+                            <th class="p-3.5">තත්ත්වය</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bulkTableBody" class="divide-y divide-slate-800/60 bg-slate-950/30"></tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="border-t border-slate-800/80 bg-slate-950/60 py-4 text-center text-xs text-slate-500">
+        <p>ශ්‍රී ලංකා විභාග දෙපාර්තමේන්තුවේ පොදු API දත්ත මඟින් ක්‍රියාත්මක වේ | Grade 5 Results Utility Portal</p>
+    </footer>
+
+    <script>
+        let bulkResults = [];
+
+        function switchTab(tab) {
+            const singleSec = document.getElementById('singleSection');
+            const bulkSec = document.getElementById('bulkSection');
+            const singleBtn = document.getElementById('tabSingleBtn');
+            const bulkBtn = document.getElementById('tabBulkBtn');
+
+            if (tab === 'single') {
+                singleSec.classList.remove('hidden');
+                bulkSec.classList.add('hidden');
+                singleBtn.className = 'flex-1 py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 bg-blue-600 text-white shadow-lg shadow-blue-600/30';
+                bulkBtn.className = 'flex-1 py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 text-slate-400 hover:text-white';
+            } else {
+                singleSec.classList.add('hidden');
+                bulkSec.classList.remove('hidden');
+                bulkBtn.className = 'flex-1 py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 bg-blue-600 text-white shadow-lg shadow-blue-600/30';
+                singleBtn.className = 'flex-1 py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 text-slate-400 hover:text-white';
+            }
+        }
+
+        async function fetchResult(indexNum) {
+            const year = document.getElementById('globalYear').value;
+            try {
+                const response = await fetch('/api/results', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ index: indexNum, year: year })
+                });
+
+                const data = await response.json();
+                if (data && (data.status === 200 || data.status === "200") && data.statusMessage) {
+                    const info = data.statusMessage;
+                    return {
+                        success: true,
+                        index: indexNum,
+                        year: year,
+                        name: info.name || 'නම සඳහන් නොවේ',
+                        marks: info.displaySubjectResult || info.marks || '-',
+                        cutoff: info.cutOffMarks || info.cutoff || '-'
+                    };
+                } else {
+                    return { success: false, index: indexNum, year: year, error: 'දත්ත පද්ධතියේ නැත' };
+                }
+            } catch (err) {
+                return { success: false, index: indexNum, year: year, error: 'සම්බන්ධතා දෝෂයකි' };
+            }
+        }
+
+        async function checkSingleResult() {
+            const indexInput = document.getElementById('singleIndexInput').value.trim();
+            const container = document.getElementById('singleResultContainer');
+            const btn = document.getElementById('singleSubmitBtn');
+
+            if (!indexInput) {
+                alert('කරුණාකර Index Number එකක් ඇතුළත් කරන්න.');
+                return;
+            }
+
+            container.classList.remove('hidden');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> <span>පරීක්ෂා කරමින්...</span>`;
+            container.innerHTML = `<div class="p-6 text-center text-slate-400 text-sm"><i class="fa-solid fa-spinner fa-spin text-xl text-blue-500 mb-2"></i><p>දත්ත ලබා ගනිමින් පවතී...</p></div>`;
+
+            const res = await fetchResult(indexInput);
+
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-magnifying-glass"></i> <span>ප්‍රතිඵල බලන්න</span>`;
+
+            if (res.success) {
+                container.innerHTML = `
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-slate-100 shadow-xl">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-3">
+                            <div>
+                                <span class="text-[10px] text-blue-400 font-bold uppercase tracking-wider">${res.year} ශිෂ්‍යත්වය</span>
+                                <h3 class="text-xl font-bold font-mono text-white">${res.index}</h3>
+                            </div>
+                            <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs px-2.5 py-1 rounded-full font-semibold">Success</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div>
+                                <span class="text-xs text-slate-400">ශිෂ්‍යයාගේ නම:</span>
+                                <p class="font-bold text-white text-sm">${res.name}</p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3 pt-1">
+                                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                                    <span class="text-[11px] text-slate-400 block">ලබාගත් ලකුණු</span>
+                                    <span class="text-lg font-bold text-blue-400">${res.marks}</span>
+                                </div>
+                                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                                    <span class="text-[11px] text-slate-400 block">Cut-off ලකුණ</span>
+                                    <span class="text-lg font-bold text-slate-200">${res.cutoff}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 text-center text-red-400 text-xs">
+                        <i class="fa-solid fa-circle-exclamation text-xl mb-1 text-red-400"></i>
+                        <p class="font-bold">ප්‍රතිඵල හමු නොවීය (${res.year})</p>
+                        <p class="text-slate-400 mt-1">Index: ${res.index} - ${res.error}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function startBulkCheck() {
+            const rawText = document.getElementById('bulkIndexInput').value;
+            const indexes = rawText.split(/[\n,]+/).map(s => s.trim()).filter(s => s.length > 0);
+
+            if (indexes.length === 0) {
+                alert('Index Numbers ඇතුළත් කරන්න.');
+                return;
+            }
+
+            bulkResults = [];
+            const btn = document.getElementById('bulkSubmitBtn');
+            const downloadBtn = document.getElementById('downloadExcelBtn');
+            const progressBox = document.getElementById('bulkProgressBox');
+            const progressBar = document.getElementById('progressBar');
+            const completedCount = document.getElementById('completedCount');
+            const totalCount = document.getElementById('totalCount');
+            const tableContainer = document.getElementById('bulkResultsTableContainer');
+            const tableBody = document.getElementById('bulkTableBody');
+
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+            downloadBtn.classList.add('hidden');
+            progressBox.classList.remove('hidden');
+            tableContainer.classList.remove('hidden');
+            tableBody.innerHTML = '';
+
+            totalCount.innerText = indexes.length;
+            completedCount.innerText = '0';
+            progressBar.style.width = '0%';
+
+            let completed = 0;
+
+            for (let idx of indexes) {
+                const res = await fetchResult(idx);
+                bulkResults.push(res);
+
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-slate-800/60 hover:bg-slate-900/50 transition';
+                tr.innerHTML = `
+                    <td class="p-3.5 font-mono font-bold text-blue-400">${res.index}</td>
+                    <td class="p-3.5 font-medium text-slate-200">${res.name}</td>
+                    <td class="p-3.5 font-bold text-blue-400">${res.marks}</td>
+                    <td class="p-3.5 text-slate-400">${res.cutoff}</td>
+                    <td class="p-3.5">
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${res.success ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}">
+                            ${res.success ? 'Success' : 'Failed'}
+                        </span>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+
+                completed++;
+                completedCount.innerText = completed;
+                progressBar.style.width = Math.round((completed / indexes.length) * 100) + '%';
+            }
+
+            btn.disabled = false;
+            btn.classList.remove('opacity-50');
+            if (bulkResults.length > 0) downloadBtn.classList.remove('hidden');
+        }
+
+        function downloadCSV() {
+            if (bulkResults.length === 0) return;
+            const year = document.getElementById('globalYear').value;
+            let csvStr = "\uFEFFYear,Index Number,Student Name,Marks,Cutoff Marks,Status\n";
+            bulkResults.forEach(r => {
+                csvStr += `"${r.year}","${r.index}","${(r.name || '').replace(/"/g, '""')}","${r.marks || '-'}","${r.cutoff || '-'}","${r.success ? 'Success' : 'Failed'}"\n`;
+            });
+
+            const blob = new Blob([csvStr], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Scholarship_Results_${year}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
